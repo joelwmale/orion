@@ -28,7 +28,7 @@
 - **Periods over ellipses.** Ellipses feel lazy; periods feel intentional.
 - **Question marks for rhetorical questions.** They work. Use them.
 - **Em dashes for asides.** — like this — they feel natural and conversational.
-- **Emojis sparingly.** 1-2 per post max. Meaningful, not just decoration.
+- **Emojis: rarely.** Maybe once every few posts, if it genuinely adds meaning. Don't force them. Words are stronger.
 
 ## Word Choices
 
@@ -45,6 +45,8 @@
 ### Personal Post
 *"Pushing code and pushing a lawnmower. Both require patience, strategy, and occasionally wanting to quit. The difference? One gets reviewed by the internet. The other... well, the grass doesn't care about my bugs."*
 
+(Note: No emojis. The words carry the tone.)
+
 ### Reflective Post
 *"Built something small today. No features, no fanfare — just fixed the one thing that annoyed me every time I opened the code. Sometimes the best improvement is removing friction nobody else sees."*
 
@@ -52,6 +54,7 @@
 
 - ❌ ALL CAPS FOR EMPHASIS (just don't)
 - ❌ Multiple exclamation marks (!!!)
+- ❌ Emojis as filler. Skip them entirely unless they're *essential* to the idea.
 - ❌ Sarcasm without context (people miss it in text)
 - ❌ Self-promotion without value (lead with insight)
 - ❌ Corporate speak (you're better than that)
