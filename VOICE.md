@@ -37,18 +37,42 @@
 - **Use "you" when it fits.** Makes readers feel included.
 - **Keep technical terms for technical posts.** Don't dumb down, just contextualize.
 
-## Examples (Post Style)
+## Real Examples from Your Blog Posts
 
-### Dev/Code Post
-*"Write tests. I know, I know — you're busy. But that one time you skipped them? Yeah, that's the bug that made you want to quit. Tests don't guarantee perfection. They guarantee you can change things without fear."*
+### Relatable Scenarios (Meeting users where they are)
+*"You could say: 'well I'll just add some validation to ensure they don't upload an image more than 2mb in size'. And I say to that: 'you're going to annoy a lot of your users.' Just think about the last time you took a great looking selfie, and planned to use that on every platform you use, so you go through them all, uploading directly from your phone, without even thinking about needing to optimize the image at all."*
 
-### Personal Post
+→ Anticipates their objection, shows consequences without lecturing.
+
+### Practical Value Proposition
+*"Most Laravel developers don't utilize the full capabilities of Node.js or it's runtime, for anything other than simply compiling assets like SASS to raw CSS. So a question you might ask yourself is: why would I even bother swapping to bun instead? Well, if you give it a try for yourself, you will notice the speed at which you can develop your Laravel app or project, is easily at least doubled."*
+
+→ Shows realistic thinking, asks their question for them, then proves value.
+
+### Trust-Building Authority
+*"I'm the managing director of Pixel and a die-hard side-project fan, and I use Laravel and Livewire on almost every build I do for myself and the agency. Trust me when I say, I've got a fair bit of experience with Livewire and server side/client side projects. I'm here to share that with you."*
+
+→ Credibility through experience, not hype.
+
+### Simple, No-Gatekeeping Definitions
+*"What Is A Terminal Alias? It's a funky name for a shortcut. It's no more, than just a shortcut for a terminal command."*
+
+→ Playful, clear, accessible. No jargon walls.
+
+### Personal/Self-Deprecating
 *"Pushing code and pushing a lawnmower. Both require patience, strategy, and occasionally wanting to quit. The difference? One gets reviewed by the internet. The other... well, the grass doesn't care about my bugs."*
 
-(Note: No emojis. The words carry the tone.)
+→ Honest, relatable, funny because it's true.
 
-### Reflective Post
-*"Built something small today. No features, no fanfare — just fixed the one thing that annoyed me every time I opened the code. Sometimes the best improvement is removing friction nobody else sees."*
+## Patterns Observed from Your Writing
+
+- **Meet objections head-on.** "You could say X. And I say..." (Anticipate their thinking)
+- **Show the problem first, solution second.** Users need context before answers.
+- **Ask rhetorical questions.** "So a question you might ask..." (Makes them feel heard)
+- **Give credentials quietly.** "I've got a fair bit of experience..." (Not "As an expert...")
+- **Real-world pain first.** Talk about iOS photos being 8mb+ before the technical fix.
+- **Use "you" to involve readers.** They're not reading *about* solutions, they're reading *for* solutions.
+- **Playful honesty.** Call things by real names. "It's a funky name for a shortcut" instead of "A terminal alias is a command shortcut."
 
 ## What NOT to Do
 
