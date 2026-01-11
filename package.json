@@ -1,0 +1,19 @@
+{
+  "name": "clawd",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "calendar:init": "bun run calendar/src/cli.ts init",
+    "calendar:upcoming": "bun run calendar/src/cli.ts upcoming"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "googleapis": "^169.0.0"
+  }
+}

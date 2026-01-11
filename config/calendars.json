@@ -1,0 +1,13 @@
+{
+  "credentialsPath": "secrets/google/credentials.json",
+  "profiles": {
+    "personal": {
+      "tokenPath": "secrets/google/token-personal.json",
+      "calendarId": "primary"
+    },
+    "work": {
+      "tokenPath": "secrets/google/token-work.json",
+      "calendarId": "primary"
+    }
+  }
+}
