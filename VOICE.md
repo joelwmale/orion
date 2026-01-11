@@ -27,7 +27,7 @@
 
 - **Periods over ellipses.** Ellipses feel lazy; periods feel intentional.
 - **Question marks for rhetorical questions.** They work. Use them.
-- **Em dashes for asides.** — like this — they feel natural and conversational.
+- **Skip em dashes.** You don't use them. They feel "AI writer." Use periods or commas instead.
 - **Emojis: rarely.** Maybe once every few posts, if it genuinely adds meaning. Don't force them. Words are stronger.
 
 ## Word Choices
