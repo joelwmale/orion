@@ -14,6 +14,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "googleapis": "^169.0.0"
+    "googleapis": "^169.0.0",
+    "twitter-api-v2": "^1.28.0"
   }
 }
