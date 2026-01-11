@@ -29,13 +29,18 @@ async function getTodaysMeetings(): Promise<CalendarEvent[]> {
 
     proc.on("close", () => {
       const meetings: CalendarEvent[] = [];
+      // Get today's date in Brisbane timezone (UTC+10)
       const today = new Date();
-      const todayDate = today.toISOString().split("T")[0];
+      const brisbaneTime = new Date(today.getTime() + (10 * 60 * 60 * 1000));
+      const todayDate = brisbaneTime.toISOString().split("T")[0];
 
-      // Parse calendar output
+      // Parse calendar output (location may span multiple lines)
       const lines = output.split("\n");
+      let i = 0;
 
-      for (const line of lines) {
+      while (i < lines.length) {
+        const line = lines[i];
+        
         // Look for lines with @ (location indicator) and today's date
         if (line.includes("@") && line.includes(todayDate)) {
           // Format: "2026-01-12T10:00:00+10:00 - 2026-01-12T13:00:00+10:00 | Title @ Location"
@@ -46,7 +51,17 @@ async function getTodaysMeetings(): Promise<CalendarEvent[]> {
           if (timeMatch) {
             const isoStart = timeMatch[1];
             const title = timeMatch[2].trim();
-            const location = timeMatch[3].trim();
+            let location = timeMatch[3].trim();
+
+            // Check if location continues on next line(s)
+            if (i + 1 < lines.length) {
+              const nextLine = lines[i + 1];
+              // If next line doesn't start with a time and doesn't have @, it's location continuation
+              if (!nextLine.includes("@") && !nextLine.match(/^\d{4}-\d{2}-\d{2}/)) {
+                location = location + " " + nextLine.trim();
+                i++; // Skip the next line
+              }
+            }
 
             const startObj = new Date(isoStart);
             const startTime = startObj.toLocaleTimeString("en-AU", {
@@ -63,6 +78,7 @@ async function getTodaysMeetings(): Promise<CalendarEvent[]> {
             });
           }
         }
+        i++;
       }
 
       // Sort by time
@@ -95,9 +111,11 @@ async function getDepartureTime(meetingTime: string): Promise<string | null> {
 
     proc.on("close", (code) => {
       if (code === 0) {
-        const match = output.match(/Leave home at: (\d{1,2}:\d{2})/);
+        const match = output.match(/Leave home at: (\d{1,2}:\d{2}(?::\d{2})?)/);
         if (match) {
-          resolve(match[1]);
+          // Remove seconds if present
+          const time = match[1].split(":").slice(0, 2).join(":");
+          resolve(time);
         } else {
           resolve(null);
         }
@@ -126,9 +144,19 @@ async function main() {
   console.log(`Found ${meetings.length} meeting(s) with locations:\n`);
 
   for (const meeting of meetings) {
-    // Calculate departure time
-    const meetingTime = meeting.startTime;
-    const departureTime = await getDepartureTime(meetingTime);
+    // Parse the ISO timestamp to extract date and time
+    // Format: "2026-01-12T10:00:00+10:00"
+    const isoMatch = meeting.startISO.match(/(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):/);
+    
+    if (!isoMatch) {
+      console.log(`⚠️  Couldn't parse time from: ${meeting.startISO}`);
+      continue;
+    }
+
+    const [, meetingDate, hours, minutes] = isoMatch;
+    const meetingTimeStr = `${meetingDate} ${hours}:${minutes}`;
+    
+    const departureTime = await getDepartureTime(meetingTimeStr);
 
     if (departureTime) {
       const message = `🚗 You have to leave at ${departureTime} for your ${meeting.startTime} meeting at ${meeting.location}`;
