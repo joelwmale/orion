@@ -22,12 +22,22 @@ interface BlogPostAnalytics {
   };
 }
 
-function loadConfig(): PirschConfig {
-  const path = join(homedir(), ".clawdbot", "credentials", "pirsch-analytics.json");
+function loadConfig(project: string = "joelmale"): PirschConfig {
+  // Support multiple projects: joelmale, rethread, etc.
+  const filename = project === "rethread" ? "pirsch-rethread.json" : "pirsch-analytics.json";
+  const path = join(homedir(), ".clawdbot", "credentials", filename);
   if (!existsSync(path)) {
     throw new Error(`Pirsch config not found at ${path}`);
   }
-  return JSON.parse(readFileSync(path, "utf8"));
+  
+  const config = JSON.parse(readFileSync(path, "utf8"));
+  
+  // Handle both website_id and dashboard_id naming
+  if (!config.website_id && config.dashboard_id) {
+    config.website_id = config.dashboard_id;
+  }
+  
+  return config;
 }
 
 function slugify(text: string): string {
@@ -65,9 +75,10 @@ async function getAccessToken(clientId: string, clientSecret: string): Promise<s
 
 async function fetchBlogPostAnalytics(
   slug: string,
-  days: number = 14
+  days: number = 14,
+  project: string = "joelmale"
 ): Promise<BlogPostAnalytics> {
-  const config = loadConfig();
+  const config = loadConfig(project);
   const token = await getAccessToken(config.client_id, config.client_secret);
 
   // Calculate date range
@@ -129,21 +140,34 @@ async function main() {
 Blog Post Analytics
 
 Usage:
-  blog-analytics <slug> [days]
-  blog-analytics "<title>" [days]   # Auto-slugify from title
+  blog-analytics [project] <slug> [days]
+  blog-analytics [project] "<title>" [days]   # Auto-slugify from title
   
+Projects: joelmale (default), rethread
+
 Examples:
   blog-analytics use-bun-as-your-package-manager-in-any-laravel-project 14
   blog-analytics "Use Bun as your package manager in any Laravel project" 7
-  blog-analytics "My Post Title" 30
+  blog-analytics rethread "School Uniform Budgeting" 30
     `);
     return;
   }
 
-  // If the command looks like a full title (has spaces), slugify it
+  // Check if first arg is a project name
+  let project = "joelmale";
+  let slug = command;
+  let daysArg = args[0];
+  
+  if (command === "joelmale" || command === "rethread") {
+    project = command;
+    slug = args[0];
+    daysArg = args[1];
+  }
+
+  // If the slug looks like a full title (has spaces), slugify it
   // Otherwise treat it as an already-slugified slug
-  const slug = command.includes(" ") ? slugify(command) : command;
-  const days = args[0] ? parseInt(args[0], 10) : 14;
+  const slugFinal = slug.includes(" ") ? slugify(slug) : slug;
+  const days = daysArg ? parseInt(daysArg, 10) : 14;
 
   if (isNaN(days) || days < 1) {
     // eslint-disable-next-line no-console
@@ -153,7 +177,7 @@ Examples:
   }
 
   try {
-    const analytics = await fetchBlogPostAnalytics(slug, days);
+    const analytics = await fetchBlogPostAnalytics(slugFinal, days, project);
     // eslint-disable-next-line no-console
     console.log(JSON.stringify(analytics, null, 2));
   } catch (err) {

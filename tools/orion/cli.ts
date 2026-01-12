@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 
 function parseArgs(argv: string[]) {
   const args: Record<string, string | boolean> = {};
@@ -138,6 +139,25 @@ function main() {
     "GITHUB VULNS",
     "bun",
     ["tools/orion/github-vulns.ts", "check", "--limit", "5"]
+  );
+
+  // TODOs
+  const todoPath = "/root/clawd/TODO.md";
+  if (existsSync(todoPath)) {
+    const todoContent = readFileSync(todoPath, "utf8").trim();
+    if (todoContent) {
+      // eslint-disable-next-line no-console
+      console.log("\n== TODOS ==");
+      // eslint-disable-next-line no-console
+      console.log(todoContent);
+    }
+  }
+
+  // Analytics (7-day summary)
+  runTool(
+    "ANALYTICS",
+    "bun",
+    ["tools/orion/analytics-summary.ts"]
   );
 }
 

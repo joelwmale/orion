@@ -26,12 +26,22 @@ interface AnalyticsResult {
   }>;
 }
 
-function loadConfig(): PirschConfig {
-  const path = join(homedir(), ".clawdbot", "credentials", "pirsch-analytics.json");
+function loadConfig(project: string = "joelmale"): PirschConfig {
+  // Support multiple projects: joelmale, rethread, etc.
+  const filename = project === "rethread" ? "pirsch-rethread.json" : "pirsch-analytics.json";
+  const path = join(homedir(), ".clawdbot", "credentials", filename);
   if (!existsSync(path)) {
     throw new Error(`Pirsch config not found at ${path}`);
   }
-  return JSON.parse(readFileSync(path, "utf8"));
+  
+  const config = JSON.parse(readFileSync(path, "utf8"));
+  
+  // Handle both website_id and dashboard_id naming
+  if (!config.website_id && config.dashboard_id) {
+    config.website_id = config.dashboard_id;
+  }
+  
+  return config;
 }
 
 async function getAccessToken(clientId: string, clientSecret: string): Promise<string> {
@@ -60,9 +70,10 @@ async function getAccessToken(clientId: string, clientSecret: string): Promise<s
 
 async function fetchAnalytics(
   websiteId: string,
-  days: number = 7
+  days: number = 7,
+  project: string = "joelmale"
 ): Promise<AnalyticsResult> {
-  const config = loadConfig();
+  const config = loadConfig(project);
   const token = await getAccessToken(config.client_id, config.client_secret);
 
   // Calculate date range
@@ -137,16 +148,29 @@ async function main() {
 Pirsch Analytics
 
 Usage:
-  pirsch-analytics <website_id> [days]
+  pirsch-analytics <project|website_id> [days]
   
+Projects: joelmale, rethread (auto-loads from credentials)
+Or provide explicit website_id.
+
 Examples:
-  pirsch-analytics zy1bBvG1lv 7      # Last 7 days
-  pirsch-analytics zy1bBvG1lv 30     # Last 30 days
+  pirsch-analytics joelmale 7         # Joel's blog, last 7 days
+  pirsch-analytics rethread 30        # Rethread, last 30 days
+  pirsch-analytics zy1bBvG1lv 7       # Direct website ID
     `);
     return;
   }
 
-  const websiteId = command;
+  // Auto-load config if it's a known project
+  const isProject = command === "joelmale" || command === "rethread";
+  const project = isProject ? command : "joelmale";
+  
+  let websiteId = command;
+  if (isProject) {
+    const config = loadConfig(project);
+    websiteId = config.website_id;
+  }
+
   const days = args[0] ? parseInt(args[0], 10) : 7;
 
   if (isNaN(days) || days < 1) {
@@ -157,7 +181,7 @@ Examples:
   }
 
   try {
-    const analytics = await fetchAnalytics(websiteId, days);
+    const analytics = await fetchAnalytics(websiteId, days, project);
     // eslint-disable-next-line no-console
     console.log(JSON.stringify(analytics, null, 2));
   } catch (err) {
