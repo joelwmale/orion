@@ -55,7 +55,9 @@ curl -X POST https://joelmale.com/api/blog/posts \
     "content": "# Markdown content here",
     "status": "draft",
     "tags": ["tag1", "tag2", "tag3"],
-    "category_ids": [1]
+    "category_ids": [1],
+    "featured_image": "https://example.com/image.jpg OR base64_encoded_string",
+    "featured_image_filename": "optional-filename.jpg"
   }'
 ```
 
@@ -72,8 +74,29 @@ curl -X PUT https://joelmale.com/api/blog/posts/{id} \
     "content": "# Updated content",
     "status": "draft",
     "tags": ["tag1", "tag2"],
-    "category_ids": [1]
+    "category_ids": [1],
+    "featured_image": "https://example.com/image.jpg OR base64_encoded_string",
+    "featured_image_filename": "optional-filename.jpg"
   }'
+```
+
+## Featured Image
+
+The `featured_image` field accepts **either:**
+- **URL:** Direct link to an image (e.g., `"https://example.com/image.jpg"`)
+- **Base64:** Base64-encoded image data (for uploading new images)
+
+The `featured_image_filename` is optional but recommended when sending base64 data (helps the backend determine file type/extension).
+
+**Example with URL:**
+```json
+"featured_image": "https://joelmale.com/images/laravel-upgrade-hero.jpg"
+```
+
+**Example with base64:**
+```json
+"featured_image": "data:image/jpeg;base64,/9j/4AAQSkZJRg...",
+"featured_image_filename": "laravel-upgrade-hero.jpg"
 ```
 
 ## Tagging Guidelines

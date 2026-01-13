@@ -29,10 +29,28 @@ async function getTodaysMeetings(): Promise<CalendarEvent[]> {
 
     proc.on("close", () => {
       const meetings: CalendarEvent[] = [];
-      // Get today's date in Brisbane timezone (UTC+10)
-      const today = new Date();
-      const brisbaneTime = new Date(today.getTime() + (10 * 60 * 60 * 1000));
-      const todayDate = brisbaneTime.toISOString().split("T")[0];
+      // Get today's date in Brisbane timezone
+      const formatter = new Intl.DateTimeFormat("en-AU", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        timeZone: "Australia/Brisbane",
+      });
+      const parts = formatter.formatToParts(new Date());
+      const yearPart = parts.find((p) => p.type === "year")?.value;
+      const monthPart = parts.find((p) => p.type === "month")?.value;
+      const dayPart = parts.find((p) => p.type === "day")?.value;
+      const todayDate = `${yearPart}-${monthPart}-${dayPart}`;
+
+      // Remote meeting location keywords to filter out
+      const remoteKeywords = [
+        "google meet",
+        "teams",
+        "zoom",
+        "microsoft teams",
+        "jitsi",
+        "discord",
+      ];
 
       // Parse calendar output (location may span multiple lines)
       const lines = output.split("\n");
@@ -40,7 +58,7 @@ async function getTodaysMeetings(): Promise<CalendarEvent[]> {
 
       while (i < lines.length) {
         const line = lines[i];
-        
+
         // Look for lines with @ (location indicator) and today's date
         if (line.includes("@") && line.includes(todayDate)) {
           // Format: "2026-01-12T10:00:00+10:00 - 2026-01-12T13:00:00+10:00 | Title @ Location"
@@ -57,25 +75,35 @@ async function getTodaysMeetings(): Promise<CalendarEvent[]> {
             if (i + 1 < lines.length) {
               const nextLine = lines[i + 1];
               // If next line doesn't start with a time and doesn't have @, it's location continuation
-              if (!nextLine.includes("@") && !nextLine.match(/^\d{4}-\d{2}-\d{2}/)) {
+              if (
+                !nextLine.includes("@") &&
+                !nextLine.match(/^\d{4}-\d{2}-\d{2}/)
+              ) {
                 location = location + " " + nextLine.trim();
                 i++; // Skip the next line
               }
             }
 
-            const startObj = new Date(isoStart);
-            const startTime = startObj.toLocaleTimeString("en-AU", {
-              hour: "2-digit",
-              minute: "2-digit",
-            });
+            // Skip remote meetings (Google Meet, Teams, Zoom, etc.)
+            const isRemote = remoteKeywords.some((keyword) =>
+              location.toLowerCase().includes(keyword)
+            );
 
-            meetings.push({
-              title,
-              startTime,
-              startISO: isoStart,
-              location,
-              endTime: "", // We'll calculate if needed
-            });
+            if (!isRemote) {
+              const startObj = new Date(isoStart);
+              const startTime = startObj.toLocaleTimeString("en-AU", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+
+              meetings.push({
+                title,
+                startTime,
+                startISO: isoStart,
+                location,
+                endTime: "", // We'll calculate if needed
+              });
+            }
           }
         }
         i++;
